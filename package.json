@@ -1,0 +1,10 @@
+{
+  "name": "slither-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive slither diagrams and allowed moves.",
+  "scripts": {
+    "test": "node check-completion.mjs && node check-dens.mjs && node check-math.mjs"
+  }
+}

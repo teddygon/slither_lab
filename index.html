@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#183e2b">
+  <meta name="description" content="Explore slither diagrams and their allowed moves.">
+  <title>Slither Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23183e2b'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='40'%3E∠%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css?v=lecture-1">
+  <script type="module" src="app.js?v=lecture-1"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Slither Lab home"><span>Slither Lab</span></a>
+  </header>
+  <main class="workspace">
+    <aside class="inputs-panel">
+      <div class="panel-heading"><h1>Inputs</h1></div>
+      <form id="slither-form" novalidate>
+        <label class="field-label" for="codomain"><span>Codomain <i>c</i></span></label>
+        <input id="codomain" name="c" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="codomain-hint" value="<0111000110>">
+        <p id="codomain-hint" class="input-help">Example: <code>⟨01⟩⟨10⟩</code></p>
+        <div class="field-heading"><label class="field-label" for="from-word">Start <i>f</i></label><span class="word-dot from-dot" aria-hidden="true"></span></div>
+        <input id="from-word" name="f" spellcheck="false" autocomplete="off" autocapitalize="off" value="LC<CC0>LCLCL">
+        <div class="field-heading"><label class="field-label" for="to-word">Target <i>g</i></label><span class="word-dot to-dot" aria-hidden="true"></span></div>
+        <input id="to-word" name="g" spellcheck="false" autocomplete="off" autocapitalize="off" value="<0>CCLCLLCLC">
+        <p class="input-help notation-short"><code>L</code> east / loop &nbsp; <code>C</code> north / coloop</p>
+        <div class="domain-box"><span>Domain <i>a</i></span><output id="domain">⟨⟩⟨⟩</output></div>
+        <button type="submit" class="primary-button">Find moves <span aria-hidden="true">→</span></button>
+        <div id="error" class="error-box" role="alert" hidden></div>
+      </form>
+      <div class="example-section"><button id="lecture-example" type="button" class="example-button">Example for Lecture</button><button id="random-pair" type="button" class="random-button"><span aria-hidden="true">⚄</span> Random pair</button></div>
+      <details class="help-details"><summary>Notation</summary><div class="help-body"><p>Use <code>&lt;…&gt;</code> for a component, with <code>0</code> and <code>1</code> inside. Both the domain and codomain may be snake dens.</p><p><code>L</code> is a loop (an east step); <code>C</code> is a coloop (a north step). They may appear inside or outside brackets in <i>f</i> and <i>g</i>, but not in <i>c</i>.</p><p>Angle brackets <code>⟨ ⟩</code>, parentheses, and <code>x y</code> also work. Spaces are ignored. A bare binary codomain such as <code>010</code> means <code>⟨010⟩</code>. Use <code>ε</code> for an empty word or den.</p><p>Each slither has one letter for every letter in <i>c</i>. Deleting L and C from both must give the same domain <i>a</i>. Up to 160 letters in <i>c</i>.</p></div></details>
+      <details class="help-details"><summary>Random pairs</summary><div class="help-body"><p>Random facet reductions choose <i>f</i>. Allowed moves then choose a distinct <i>g</i> with the same pruning in each codomain component. The generated pair always has a move path. Sampling is not uniform.</p></div></details>
+    </aside>
+    <section class="result-panel" aria-label="Current slither and fixed target">
+      <div class="result-heading"><h2 id="route-title">Moves</h2><span id="result-badge" class="result-badge">Ready</span></div>
+      <div id="stale-notice" class="stale-notice" role="status" hidden>Inputs changed. Select “Find moves” to update.</div>
+      <div class="diagram-toolbar"><div class="diagram-legend"><span><b class="legend-line"></b>slither</span><span><b class="legend-line ambient-line"></b>ambient den</span></div><div class="diagram-options"><label class="toggle-label"><input type="checkbox" id="show-changes" checked> Highlight last move</label><select id="diagram-size" aria-label="Diagram scale"><option value="fit">Fit</option><option value="cells">Larger cells</option></select></div></div>
+      <div class="diagrams">
+        <article class="diagram-card current-card"><div class="diagram-card-heading"><div><h3>Current</h3></div><span id="current-state">State 0</span></div><div id="current-diagram" class="diagram-area"></div><div id="current-word" class="word-strip" aria-label="Current word"></div></article>
+        <article class="diagram-card target-card"><div class="diagram-card-heading"><div><h3>Target <i>g</i></h3></div></div><div id="target-diagram" class="diagram-area"></div><div id="target-word" class="word-strip" aria-label="Fixed target word"></div></article>
+      </div>
+      <div class="diagram-footnote"><span id="join-legend"><b class="join-marker"></b>codomain join</span></div>
+      <div class="transport"><div class="transport-buttons"><button id="first" class="icon-button" aria-label="Return to f" title="Return to f">|‹</button><button id="previous" class="icon-button" aria-label="Undo last move" title="Previous state (left arrow)">‹</button><button id="play" class="play-button" aria-label="Play sequence"><span aria-hidden="true">▶</span> Play</button><button id="next" class="icon-button" aria-label="Apply next move" title="Next state (right arrow)">›</button><button id="last" class="icon-button" aria-label="Show completed result" title="Show completed result">›|</button></div><span id="step-counter" class="step-counter">0 / 4 moves</span><select id="speed" aria-label="Playback speed"><option value="2400">Slow</option><option value="1400" selected>Normal</option><option value="700">Fast</option></select></div>
+      <input id="step-slider" class="step-slider" type="range" min="0" max="0" value="0" aria-label="Number of moves applied">
+      <div class="timeline-labels"><span><i>f</i> <span id="start-label"></span></span><span><i>g</i> <span id="end-label"></span></span></div>
+      <section class="move-description" aria-live="polite" aria-atomic="true"><div class="move-number" id="move-number">f</div><div class="move-copy"><div class="move-title-row"><h3 id="move-title">Start at f</h3><span id="move-rule" class="rule-tag">Ready</span></div><p id="move-text"></p><div id="local-change" class="local-change"></div></div></section>
+      <details id="certificate" class="certificate"><summary>Move certificate</summary><div id="certificate-body" class="certificate-body"></div></details>
+      <details id="component-info" class="component-info" hidden><summary id="component-summary">Codomain components</summary><div id="component-table" class="component-table"></div><p class="help-body">Moves stay within each component of <i>c</i>. The two prunings in every row must agree for a path to exist.</p></details>
+      <details class="proof-details"><summary>Method</summary><div class="help-body"><p>For a single snake, move <i>f</i> and <i>g</i> to leftmost representatives, match their bound tails, then reverse the moves for <i>g</i>. Closed excursions are removed. The route need not be shortest.</p><p>For a snake-den codomain, this is applied separately in each component. The pruning in each codomain component is preserved by the allowed moves. When those prunings differ, both diagrams are shown and the mismatch is explained instead of claiming a path.</p><p>Every move and its ambient witness are checked inside <i>c</i>. The diagrams show a discrete chain of combinatorial moves, not the parameter of an algebraic homotopy.</p></div></details>
+    </section>
+  </main>
+  <footer><span class="keyboard-hint">← → Step · Space Play / pause</span></footer>
+  <dialog id="intro-dialog" class="intro-dialog" aria-label="Quick start" aria-describedby="intro-copy">
+    <p id="intro-copy">Click <strong>Play</strong> to watch the homotopy. To try your own slithers, change the codomain <i>c</i> and click <strong>Random pair</strong>.</p>
+    <button id="intro-dismiss" type="button" class="primary-button" autofocus>Got it</button>
+  </dialog>
+</body>
+</html>
